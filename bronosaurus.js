@@ -2,8 +2,9 @@ var util = require('util'),
     exec = require('child_process').exec,
     child;
 
-casperScreenshot('http://www.zappos.com/clothing', '.pageHeader', 'header.png', function (localScreenshot) {
-  //uploadScreenshot(screenshotPath, screenshotPath);
+casperScreenshot('http:/www.zappos.com/clothing', '.pageHeader', 'oh/shit/yea/header.png', function (screenshotPath) {
+  console.log('localScreenshot:' + screenshotPath);
+  uploadScreenshot(screenshotPath, screenshotPath);
 })
 
 
@@ -11,7 +12,7 @@ casperScreenshot('http://www.zappos.com/clothing', '.pageHeader', 'header.png', 
  * Takes a screenshot of a webpage area given a selector and saves it to local
  * disk.
  */
-function casperScreenshot(url, selector, imageDestination) {
+function casperScreenshot(url, selector, imageDestination, callback) {
 
   argumentData = {
     url: url,
@@ -28,8 +29,9 @@ function casperScreenshot(url, selector, imageDestination) {
       // We will know when casper has taken the screenshot when we see a
       // specific keyword from sdout 'done'
       if (stdout.indexOf('done:') !== -1) {
-        var fileSaved = stdout.split(':')[1];
-        console.log('Casper is done taking a screenshot: ' + fileSaved);
+        var fileSaved = stdout.split(':')[1].replace(/\n+/g, '');
+        //console.log('Casper is done taking a screenshot: ' + fileSaved);
+        callback(fileSaved);
       }
       // Or everything goes to shit...
       else {
@@ -46,5 +48,25 @@ function casperScreenshot(url, selector, imageDestination) {
 }
 
 function uploadScreenshot(src, dest) {
+
+  var s3 = require('s3');
+  // createClient allows any options that knox does.
+  var client = s3.createClient({
+    key: "AKIAJ45OASDNMYW3CDSQ",
+    secret: "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",
+    bucket: "pterodactyl"
+  });
+
+  // upload a file to s3
+  var uploader = client.upload(src, dest);
+
+  uploader.on('error', function(err) {
+    console.error("unable to upload:", err.stack);
+  });
+
+  uploader.on('end', function() {
+    console.log("done");
+  });
+
 
 }
