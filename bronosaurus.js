@@ -5,7 +5,6 @@ var util = require('util'),
 casperScreenshot('http:/www.zappos.com/clothing', '.pageHeader', 'oh/shit/yea/header.png', function (screenshotPath) {
   console.log('localScreenshot:' + screenshotPath);
   uploadScreenshot(screenshotPath, screenshotPath);
-  diffScreenshots(screenshotPath, 'header2.png');
 })
 
 
@@ -72,10 +71,3 @@ function uploadScreenshot(src, dest) {
 
 }
 
-function diffScreenshots(file1, file2) {
-  // Stealing puts, can use Deshawn's method tomorrow
-  var sys = require('sys');
-  function puts(error, stdout, stderr) { sys.puts(stdout) };
-  // Execute the imagediff binary to generate a diffed screenshot on the local disk
-  exec("node_modules/imagediff/bin/imagediff -d " + file1 + " " + file2 + " " + "diff.png", puts);
-}
