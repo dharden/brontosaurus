@@ -1,0 +1,1 @@
+curl localhost:3000/storeSnapShot -d 'json={ "id":"1", "runCountForDay":"55", "url":"http://zappos.com/shoes", "date":"01012012", "task": { "id":"2", "actions":"hover#something.else", "selector":"#thisthing .thatthing" } ] }'

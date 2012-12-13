@@ -1,7 +1,6 @@
 var casper = require('casper').create();
 
 // Un-base64 decode arguments, and unstringify the json of the arguments
-
 var args = JSON.parse(window.atob(casper.cli.args[0]));
 
 var url = args['url'];
