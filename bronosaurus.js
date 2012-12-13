@@ -1,17 +1,52 @@
-var util = require('util'),
-    exec = require('child_process').exec,
+var exec = require('child_process').exec,
     child;
 
-casperScreenshot('http:/www.zappos.com/clothing', '.pageHeader', 'oh/shit/yea/header.png', function (screenshotPath) {
-  console.log('localScreenshot:' + screenshotPath);
-  uploadScreenshot(screenshotPath, screenshotPath);
-})
+// example using express.js:
+var express = require('express')
+  , app = express();
 
+app.use(express.bodyParser());
 
-/**
- * Takes a screenshot of a webpage area given a selector and saves it to local
- * disk.
- */
+app.post('/storeSnapShot', function(req, res) {
+  var json = req.body.json;  // second parameter is default
+
+  requestData = JSON.parse(json);
+
+  /*
+  { "id":"1",
+     "runCountForDay":"55",
+     "url":"http://zappos.com/shoes",
+     "date":"01012012",
+     "task":
+        {
+           "id":"2",
+           "actions":"hover#something.else",
+           "selector":"#thisthing .thatthing"
+        }
+  }
+  */
+
+  var id = requestData.id;
+  var taskId = requestData.task.id;
+  var date = requestData.date;
+  var selector = requestData.task.selector;
+  var runCountForDay = requestData.runCountForDay;
+  var url = requestData.url;
+  var forPage = requestData.for_page;
+
+  casperScreenshot(url, selector,  'archived/' + taskId + '/' + id + '/' + date + '/' + runCountForDay + '/' + forPage + '/screenshot.png', function (screenshotpath) {
+    uploadScreenshot(screenshotpath, screenshotpath);
+    diffScreenshots(screenshotpath, 'header2.png');
+  });
+
+});
+
+app.listen(3000);
+
+/*
+ Takes a screenshot of a webpage area given a selector and saves it to local
+ disk.
+*/
 function casperScreenshot(url, selector, imageDestination, callback) {
 
   argumentData = {
@@ -68,6 +103,12 @@ function uploadScreenshot(src, dest) {
     console.log("done");
   });
 
-
 }
 
+function diffScreenshots(file1, file2) {
+  // Stealing puts, can use Deshawn's method tomorrow
+  var sys = require('util');
+  function puts(error, stdout, stderr) { sys.puts(stdout) };
+  // Execute the imagediff binary to generate a diffed screenshot on the local disk
+  exec("node_modules/imagediff/bin/imagediff -d " + file1 + " " + file2 + " " + "diff.png", puts);
+}
