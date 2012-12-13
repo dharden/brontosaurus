@@ -28,11 +28,13 @@ app.post('/storeSnapShot', function(req, res) {
 
   var id = requestData.id;
   var taskId = requestData.task.id;
+  var date = requestData.date;
   var selector = requestData.task.selector;
   var runCountForDay = requestData.runCountForDay;
   var url = requestData.url;
+  var forPage = requestData.for_page;
 
-  casperScreenshot(url, selector,  'archived/' + taskId + '/' + id + '/' + runCountForDay + '/screenshot.png', function (screenshotpath) {
+  casperScreenshot(url, selector,  'archived/' + taskId + '/' + id + '/' + date + '/' + runCountForDay + '/' + forPage + '/screenshot.png', function (screenshotpath) {
     uploadScreenshot(screenshotpath, screenshotpath);
     diffScreenshots(screenshotpath, 'header2.png');
   });
