@@ -11,7 +11,6 @@ app.post('/storeSnapShot', function(req, res) {
   var json = req.body.json;  // second parameter is default
 
   requestData = JSON.parse(json);
-    console.log(requestData);
 
   /*
   { "id":"1",
@@ -33,68 +32,14 @@ app.post('/storeSnapShot', function(req, res) {
   var runCountForDay = requestData.runCountForDay;
   var url = requestData.url;
 
-
-console.log(taskId);
-console.log(runCountForDay);
-console.log(url);
-
   casperScreenshot(url, selector,  'archived/' + taskId + '/' + id + '/' + runCountForDay + '/screenshot.png', function (screenshotpath) {
-    console.log('localscreenshot:' + screenshotpath);
     uploadScreenshot(screenshotpath, screenshotpath);
     diffScreenshots(screenshotpath, 'header2.png');
   });
 
-  console.log(json);
 });
 
-//app.post('/storeSnapShot', function(req, res){
-
-//console.log(req);
-
-//if (req.query.json) {
-//console.log(req.query.json);
-//console.log("\n\n\n\n");
-  //var request = JSON.parse(req.query.json);
-  ////console.log("yea" + request + "yea");
-//}
-
-/*
-{
-   "id":"1",
-   "runCountForDay":"55",
-   "url":"http://zappos.com/shoes",
-   "date":"01012012",
-   "task":
-      {
-         "id":"2",
-         "actions":"click#something hover#something.else",
-         "selector":"#thisthing .thatthing"
-      }
-   ]
-}
-*/
-
-  //for (var i = 0; i < tests.length; i++) {
-
-    //var id = request.id;
-    //var testId = tests[i].id;
-    //var date = tests[i].date;
-    //var runCountForDay = tests[i].runCountForDay;
-
-    //casperScreenshot(url, '.pageHeader', id + '/' + testId + '/' + runCount + '/screenshot.png', function (screenshotPath) {
-      //console.log('localScreenshot:' + screenshotPath);
-      //uploadScreenshot(screenshotPath, screenshotPath);
-      //diffScreenshots(screenshotPath, 'header2.png');
-    //});
-
-
-  //}
-
-//});
-
 app.listen(3000);
-
-//http://www.service.com/{id}/{testid}/{date}/{runCountForDay}/{page}/screenshot.png
 
 /*
  Takes a screenshot of a webpage area given a selector and saves it to local
