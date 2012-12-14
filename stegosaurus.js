@@ -4,13 +4,65 @@ var util = require('util'),
     sys = require('sys');
     express = require('express');
     app = express();
+    fs = require('fs');
 
 function diffScreenshots(id, file1, file2, callback) {
 
   // We're going to return whether or not the images were equal.
   var isEqual;
 
-  var file1 = downloadFile(file1);
+  downloadFile(file1, function (fileName1) {
+    downloadFile(file2, function (fileName2) {
+        okayBothAreDone(fileName1, fileName2);
+    });
+  });
+
+  function okayBothAreDone(file1, file2) {
+    var itWorked1 = fs.existsSync(file1);
+    var itWorked2 = fs.existsSync(file2);
+    console.log('Files worked: ' + itWorked1 + ' ' + itWorked2);
+    console.log('okay, both are done.');
+    // Stealing puts, can use Deshawn's method tomorrow
+    function puts(error, stdout, stderr) { sys.puts(stdout) };
+    // Execute the imagediff binary to generate a diffed screenshot on the local disk
+    console.log(file1 + file2);
+    exec("node_modules/imagediff/bin/imagediff -e " + file1 + " " + file2,
+
+      function (error, stdout, stderr) {      // one easy function to capture data/errors
+        sys.puts(stdout);
+        // We will know if the images are equal or not when we see true or false in stdout
+
+        // Its false
+        if (stdout.indexOf('false') !== -1) {
+          isEqual = false;
+          var fileName = id + ".png";
+          var fileLocation = "diff/" + fileName;
+          exec("node_modules/imagediff/bin/imagediff -d " + file1 + " " + file2 + " " + fileName, function () {
+
+            uploadScreenshot(fileName, fileLocation);
+
+          });
+
+        }
+        else if (stdout.indexOf('true') !== -1) {
+          isEqual = true;
+        }
+        // Or everything goes to shit...
+        else {
+          console.log('Dont know whats going on with imagediff...' + stdout);
+        }
+
+        if (error !== null) {
+          console.log('exec error: ' + error);
+        }
+        
+        console.log('We made it out alive!');
+        console.log(isEqual); 
+        callback(isEqual);
+    });
+
+
+  }
 
   /* come back to this 
   var imagediff = require('imagediff');
@@ -19,38 +71,6 @@ function diffScreenshots(id, file1, file2, callback) {
   var isEqual = imagediff.equal(file1, file2, 0);
   console.log(isEqual); */
 
-  // Stealing puts, can use Deshawn's method tomorrow
-  function puts(error, stdout, stderr) { sys.puts(stdout) };
-  // Execute the imagediff binary to generate a diffed screenshot on the local disk
-
-  exec("node_modules/imagediff/bin/imagediff -e " + file1 + " " + file2,
-
-    function (error, stdout, stderr) {      // one easy function to capture data/errors
-      sys.puts(stdout);
-      // We will know if the images are equal or not when we see true or false in stdout
-      if (stdout.indexOf('false') !== -1) {
-        isEqual = false;
-        var fileName = id + ".png";
-        var fileLocation = "diff/" + fileName;
-        exec("node_modules/imagediff/bin/imagediff -d " + file1 + " " + file2 + " " + fileName); 
-        uploadScreenshot(fileName, fileLocation);
-      }
-      else if (stdout.indexOf('true') !== -1) {
-        isEqual = true;
-      }
-      // Or everything goes to shit...
-      else {
-        console.log('Dont know whats going on with imagediff...' + stdout);
-      }
-
-      if (error !== null) {
-        console.log('exec error: ' + error);
-      }
-      
-      console.log('We made it out alive!');
-      console.log(isEqual); 
-      callback(isEqual);
-  });
 
 
   // exec("node_modules/imagediff/bin/imagediff -d " + file1 + " " + file2 + " " + "diff.png", puts);
@@ -62,13 +82,13 @@ app.get('/diff/:id/:file1/:file2', function(req, res){
   var id = req.params['id'];
   diffScreenshots(id, file1, file2, function(isEqual) {
     if (isEqual === false) {
-      res.send(201, 'yeah boyee');
+      res.send(201, 'yeah boyee (looks like their not equal)');
     }
     else if (isEqual === true) {
-      res.send("shit just got real");
+      res.send("nah dawg they're the same (their equal)");
     }
     else {
-      res.send("nah dawg they're the same");
+      res.send("shit just got real (it broke)");
     }
   });
 });
@@ -99,10 +119,9 @@ function uploadScreenshot(src, dest) {
 
 }
 
-function downloadFile(file) {
+function downloadFile(file, finishedDownloadingFile) {
   
   // Dependencies
-  var fs = require('fs');
   var url = require('url');
   var http = require('http');
   var exec = require('child_process').exec;
@@ -136,6 +155,7 @@ function downloadFile(file) {
               file.write(data);
           }).on('end', function() {
               file.end();
+              finishedDownloadingFile(file_name);
               console.log(file_name + ' downloaded to ' + DOWNLOAD_DIR);
           });
       });
