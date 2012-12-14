@@ -64,6 +64,9 @@ app.get('/diff/:id/:file1/:file2', function(req, res){
     if (isEqual === false) {
       res.send(201, 'yeah boyee');
     }
+    else if (isEqual === true) {
+      res.send("shit just got real");
+    }
     else {
       res.send("nah dawg they're the same");
     }
@@ -95,9 +98,6 @@ function uploadScreenshot(src, dest) {
   });
 
 }
-
-
-
 
 function downloadFile(file) {
   
