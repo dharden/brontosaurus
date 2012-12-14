@@ -80,6 +80,8 @@ app.get('/diff/:id/:file1/:file2', function(req, res){
   var file1 = encodeURIComponent(req.params['file1']);
   var file2 = encodeURIComponent(req.params['file2']);
   var id = req.params['id'];
+  console.log('file1 is: ' + file1);
+  console.log('file2 is: ' + file2);
   diffScreenshots(id, file1, file2, function(isEqual) {
     if (isEqual === false) {
       res.send(201, 'yeah boyee (looks like their not equal)');
