@@ -80,8 +80,6 @@ app.get('/diff/:id/:file1/:file2', function(req, res){
   var file1 = encodeURIComponent(req.params['file1']);
   var file2 = encodeURIComponent(req.params['file2']);
   var id = req.params['id'];
-  console.log('file1 is: ' + file1);
-  console.log('file2 is: ' + file2);
   diffScreenshots(id, file1, file2, function(isEqual) {
     if (isEqual === false) {
       res.send(201, 'yeah boyee (looks like their not equal)');
@@ -133,6 +131,8 @@ function downloadFile(file, finishedDownloadingFile) {
   var DOWNLOAD_DIR = './';
   
   var file_name = url.parse(file_url).pathname.split('/').pop();
+
+  console.log('screenshot is: ' + file_url);
 
   // We will be downloading the files to a directory, so make sure it's there
   // This step is not required if you have manually created the directory
