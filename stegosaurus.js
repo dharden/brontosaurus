@@ -93,7 +93,7 @@ app.get('/diff/:id/:file1/:file2', function(req, res){
   });
 });
 
-app.listen(3000);
+app.listen(3001);
 
 
 function uploadScreenshot(src, dest) {
