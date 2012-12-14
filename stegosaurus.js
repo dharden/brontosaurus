@@ -130,7 +130,8 @@ function downloadFile(file, finishedDownloadingFile) {
   var file_url = decodeURIComponent(file);
   var DOWNLOAD_DIR = './';
   
-  var file_name = url.parse(file_url).pathname.split('/').pop();
+  var file_name = Date.now();
+  //var file_name = url.parse(file_url).pathname.split('/').pop();
 
   console.log('screenshot is: ' + file_url);
 
