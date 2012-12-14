@@ -7,10 +7,13 @@ var url = args['url'];
 var selector = args['selector'];
 var imageDestination = args['imageDestination'];
 
+
 casper.start(url, function() {
     this.captureSelector(imageDestination, selector);
     this.clear(); // javascript execution in this page has been stopped
 });
+
+casper.viewport(1024, 768);
 
 casper.then(function() {
   this.echo('done:' + imageDestination);

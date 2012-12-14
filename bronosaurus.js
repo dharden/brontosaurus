@@ -8,9 +8,21 @@ var express = require('express')
 app.use(express.bodyParser());
 
 app.post('/storeSnapShot', function(req, res) {
-  var json = req.body.json;  // second parameter is default
 
-  requestData = JSON.parse(json);
+var json = req.body;  // second parameter is default
+
+
+var jsonKey;
+for (var key in json) {
+jsonKey = key;
+}
+
+console.log(jsonKey);
+
+requestData = JSON.parse(jsonKey);
+requestData = requestData.json;
+
+console.log(requestData);
 
   /*
   { "id":"1",
@@ -33,6 +45,8 @@ app.post('/storeSnapShot', function(req, res) {
   var runCountForDay = requestData.runCountForDay;
   var url = requestData.url;
   var forPage = requestData.for_page;
+
+console.log('archived/' + taskId + '/' + id + '/' + date + '/' + runCountForDay + '/' + forPage + '/screenshot.png');
 
   casperScreenshot(url, selector,  'archived/' + taskId + '/' + id + '/' + date + '/' + runCountForDay + '/' + forPage + '/screenshot.png', function (screenshotpath) {
     uploadScreenshot(screenshotpath, screenshotpath);
