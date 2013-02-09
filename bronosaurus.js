@@ -101,8 +101,8 @@ function uploadScreenshot(src, dest) {
   var s3 = require('s3');
   // createClient allows any options that knox does.
   var client = s3.createClient({
-    key: "AKIAJ45OASDNMYW3CDSQ",
-    secret: "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",
+    key: "",
+    secret: "",
     bucket: "pterodactyl"
   });
 
